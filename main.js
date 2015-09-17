@@ -1,12 +1,18 @@
 var fs = require('fs');
 var spawn = require('child_process').spawnSync;
 var exec = require('child_process').execSync;
-var jsdiff = require('diff');
-
+var worldState = {};
+var playersState = {};
+var playersActions = {};
 // player.stdout -> validation
   // good validation -> next player
   // bad validation -> removal from list, notification to player.
 // validation -> graphical display!
+
+playersActions.move = function(){
+  console.log("moved!");
+  return "moved!";
+}
 
 function goodTurn(oldstate, newstate){
   //run a diff between oldstate and newstate, check game rules.
@@ -23,36 +29,39 @@ function startingPlayer(){
   };
 }
 
-function playerInfo(file){
-  return startingPlayer();
-}
-
-function worldInfo(filter){
-  return startingPlayer();
-}
-
-function stateInfo(file){
-  return{
-    player: playerInfo(),
-    world: worldInfo()
+function getState(file){
+  //if there is a file, reduce world state to what the player should be able to see
+  //otherwise, give them a birds eye view
+  var playerStats = playersState[file];
+  return {
+    worldState,
+    playerState: playerStats
   };
 }
 
 function play(file){
-  // console.log("play");
-  // console.log(JSON.stringify(stateInfo()));
-  var result = spawn('programs/'+file, {input: JSON.stringify(stateInfo(file))});
-  console.log("play: "+result.stdout);
-  // goodTurn(stateInfo(file),result.stdout);
+  var result = spawn('programs/'+file, {input: JSON.stringify(getState(file))});
+  // interpret program return stream as buffer
+  var action = ""+result.stdout;
+  // interpret that buffer as a string, prettify it
+  action = action.trim();
+  // run the program's prettified string as an action.
+  try {
+    playersActions[action]();
+  }
+  catch(err){
+    console.log(err);
+  }
 }
 
 function setup(file){
   exec('chmod +x programs/'+file);
-  // db.put(file, startingPlayer);
+  playersState[file] = startingPlayer();
+  // console.dir(playersState);
 }
 
 function fileHandler(err, files){
-  console.log(files);
+  // console.log(files);
   files.forEach(setup);
   files.forEach(play);
 }
