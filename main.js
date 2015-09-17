@@ -1,60 +1,37 @@
 var fs = require('fs');
 var spawn = require('child_process').spawnSync;
 var exec = require('child_process').execSync;
-var worldState = {};
-var playersState = {};
-var playersActions = {};
-// player.stdout -> validation
-  // good validation -> next player
-  // bad validation -> removal from list, notification to player.
-// validation -> graphical display!
-
-playersActions.move = function(modifier){
-  console.log("move: "+modifier);
-  return "moved!";
-}
-
-function startingPlayer(){
-  return {
-    health: 100,
-    position: [0,0]
-  };
-}
-
-function getState(file){
-  //if there is a file, reduce world state to what the player should be able to see
-  //otherwise, give them a birds eye view
-  var playerStats = playersState[file];
-  return {
-    worldState,
-    stats: playerStats
-  };
-}
+var api = require('./api.js')();
 
 function run(file){
-  var result = spawn('programs/'+file, {input: JSON.stringify(getState(file))});
-  // interpret program return stream as buffer
-  var action = ""+result.stdout;
-  // interpret that buffer as a string, prettify it
-  action = action.trim().split(' ');
-  var verb = action[0];
-  var modifier = action[1];
-  // run the program's prettified string as a function
+  var state = api.state.get(file);
+  var result = spawn('programs/'+file, {input: JSON.stringify(state)});
+  var action = convertStringToAction(""+result.stdout);
+  var verb = action['verb'];
+  var modifier = action['modifier'];
   try {
-    playersActions[verb](modifier);
+    api.world.find(file)[0][verb](modifier);
   }
   catch(err){
     console.log(err);
+    console.log('Errors here are from malformed actions by players.');
   }
+}
+
+function convertStringToAction(string){
+  string = string.trim().split(' ');
+  var verb = string[0];
+  var modifier = string[1];
+  return {verb: verb, modifier: modifier};
 }
 
 function setup(file){
   exec('chmod +x programs/'+file);
-  playersState[file] = startingPlayer();
+  api.world.addPlayer(file);
 }
 
 function loop(err, files){
-  if (Object.keys(playersState).length < files.length){
+  if (api.world.players.length < files.length){
     files.forEach(setup);
   }
   files.forEach(run);

@@ -1,2 +1,2 @@
 #!/usr/local/bin/node
-process.stdin.pipe(process.stdout);
+console.log('malformed action!');
