@@ -1,6 +1,7 @@
 var fs = require('fs');
 var spawn = require('child_process').spawnSync;
 var exec = require('child_process').execSync;
+var jsdiff = require('diff');
 
 // player.stdout -> validation
   // good validation -> next player
@@ -8,10 +9,11 @@ var exec = require('child_process').execSync;
 // validation -> graphical display!
 
 function goodTurn(oldstate, newstate){
-  console.log(newstate);
-  if (newstate == null){ return false; }
   //run a diff between oldstate and newstate, check game rules.
-  return true;
+  var diff = jsdiff.diffJson(oldstate,newstate);
+  diff.forEach(function(part){
+    console.log(part.added);
+  });
 }
 
 function startingPlayer(){
@@ -37,13 +39,15 @@ function stateInfo(file){
 }
 
 function play(file){
+  // console.log("play");
   // console.log(JSON.stringify(stateInfo()));
-  var result = spawn('./programs/'+file, {input: JSON.stringify(stateInfo(file))});
+  var result = spawn('programs/'+file, {input: JSON.stringify(stateInfo(file))});
   console.log("play: "+result.stdout);
+  // goodTurn(stateInfo(file),result.stdout);
 }
 
 function setup(file){
-  exec('chmod +x ./programs/'+file);
+  exec('chmod +x programs/'+file);
   // db.put(file, startingPlayer);
 }
 

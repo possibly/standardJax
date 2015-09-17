@@ -1,2 +1,2 @@
 #!/usr/local/bin/node
-console.log('yep!');
+process.stdin.pipe(process.stdout);
