@@ -1,2 +1,2 @@
 #!/usr/local/bin/node
-console.log("move");
+console.log("move left");

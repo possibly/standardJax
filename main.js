@@ -9,17 +9,9 @@ var playersActions = {};
   // bad validation -> removal from list, notification to player.
 // validation -> graphical display!
 
-playersActions.move = function(){
-  console.log("moved!");
+playersActions.move = function(modifier){
+  console.log("move: "+modifier);
   return "moved!";
-}
-
-function goodTurn(oldstate, newstate){
-  //run a diff between oldstate and newstate, check game rules.
-  var diff = jsdiff.diffJson(oldstate,newstate);
-  diff.forEach(function(part){
-    console.log(part.added);
-  });
 }
 
 function startingPlayer(){
@@ -35,19 +27,21 @@ function getState(file){
   var playerStats = playersState[file];
   return {
     worldState,
-    playerState: playerStats
+    stats: playerStats
   };
 }
 
-function play(file){
+function run(file){
   var result = spawn('programs/'+file, {input: JSON.stringify(getState(file))});
   // interpret program return stream as buffer
   var action = ""+result.stdout;
   // interpret that buffer as a string, prettify it
-  action = action.trim();
-  // run the program's prettified string as an action.
+  action = action.trim().split(' ');
+  var verb = action[0];
+  var modifier = action[1];
+  // run the program's prettified string as a function
   try {
-    playersActions[action]();
+    playersActions[verb](modifier);
   }
   catch(err){
     console.log(err);
@@ -57,13 +51,13 @@ function play(file){
 function setup(file){
   exec('chmod +x programs/'+file);
   playersState[file] = startingPlayer();
-  // console.dir(playersState);
 }
 
-function fileHandler(err, files){
-  // console.log(files);
-  files.forEach(setup);
-  files.forEach(play);
+function loop(err, files){
+  if (Object.keys(playersState).length < files.length){
+    files.forEach(setup);
+  }
+  files.forEach(run);
 }
 
-fs.readdir('./programs', fileHandler);
+fs.readdir('./programs', loop);
