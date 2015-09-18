@@ -1,3 +1,6 @@
+//variables that deal with displaying information
+var dBlank = 0;
+
 function _player(name){
   return {
     move: function(modifier){
@@ -18,12 +21,15 @@ function _player(name){
   };
 }
 
+function _initBoard(){
+  return [ [dBlank,dBlank,dBlank],
+            [dBlank,dBlank,dBlank],
+            [dBlank,dBlank,dBlank] 
+          ];
+}
+
 var world = {
-  board: [
-          [0,0,0],
-          [0,0,0],
-          [0,0,0]
-        ],
+  board: _initBoard(),
   players: [],
   get: function(x,y){
     return this.board[x][y];
@@ -35,7 +41,7 @@ var world = {
     return obj;
   },
   remove: function(x,y){
-    return null;
+    return this.board[x][y] == dBlank
   },
   find: function(file){ //returns an array!
     var found = []
