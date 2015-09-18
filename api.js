@@ -52,11 +52,13 @@ var world = {
   addPlayer: function(file){
     //deal with a player already present on the board at
     //the starting location.
+    var newplayer = undefined;
     if (this.get(0,0) == 0){
-      this.put(0,0, _player(file));
+      newplayer = this.put(0,0, _player(file));
     }else{
-      this.put(0,1, _player(file));
+      newplayer = this.put(0,1, _player(file));
     }
+    this.players.push(newplayer);
   }
 }
 
