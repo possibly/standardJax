@@ -40,8 +40,10 @@ var world = {
     this.board[x][y] = obj;
     return obj;
   },
-  remove: function(x,y){
-    return this.board[x][y] == dBlank
+  remove: function(x,y){ //returns removed object.
+    var clone = JSON.parse(JSON.stringify(this.board[x][y]));
+    this.board[x][y] = dBlank;
+    return clone;
   },
   find: function(file){ //returns an array!
     var found = []
