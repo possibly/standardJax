@@ -1,8 +1,8 @@
 var fs = require('fs');
 var EventEmitter = require('events').EventEmitter;
-var Runner = require('./Runner.js');
-var Interpreter = require('./Interpreter.js');
-var World = require('./World.js');
+var Runner = require('./lib/Runner.js');
+var Interpreter = require('./lib/Interpreter.js');
+var World = require('./lib/World.js');
 
 var emitter = new EventEmitter();
 var runner = new Runner(emitter);
