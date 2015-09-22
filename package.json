@@ -4,7 +4,8 @@
   "description": "Applejax but played by writing programs that recieve a JSON payload via stdin and respond via stdout with simple text strings that conform to an api. Its easier then it sounds.",
   "main": "main.js",
   "dependencies": {
-    "fixed-2d-array": "git+https://git@github.com/possibly/fixed-2d-array.git"
+    "fixed-2d-array": "git+https://git@github.com/possibly/fixed-2d-array.git",
+    "shallow-copy": "0.0.1"
   },
   "devDependencies": {},
   "scripts": {
