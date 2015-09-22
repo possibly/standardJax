@@ -35,10 +35,11 @@ function setupAndStartLoop(err, files){
 emitter.on('playerTurnStart', function(player){
   console.log("It is "+player+"'s turn.");
 });
-emitter.on('turnEnd', function(player){
-  console.log('The player now looks like this:');
+emitter.on('turnEnd', function(player, success){
+  console.log('The player '+success);
+  console.log('The player model now looks like this:');
   console.log(interpreter.interpretPlayer(player));
-  console.log(player.stats.name+"'s turn is now over.")
+  console.log(interpreter.getPlayerName(player)+"'s turn is now over.")
   console.log('-------------------------------------');
 });
 
