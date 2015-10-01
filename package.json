@@ -5,7 +5,8 @@
   "main": "main.js",
   "dependencies": {
     "fixed-2d-array": "git+https://git@github.com/possibly/fixed-2d-array.git",
-    "shallow-copy": "0.0.1"
+    "shallow-copy": "0.0.1",
+    "split": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {
