@@ -8,7 +8,6 @@
     "fixed-2d-array": "git+https://git@github.com/possibly/fixed-2d-array.git",
     "readdir-stream": "^0.1.0",
     "rounds-emitter": "git+https://git@github.com/possibly/rounds-emitter.git",
-    "shallow-copy": "0.0.1",
     "split": "^1.0.0",
     "stream-from-array": "^0.1.0",
     "through2": "^2.0.0"
