@@ -4,13 +4,8 @@
   "description": "Applejax but played by writing programs that recieve a JSON payload via stdin and respond via stdout with simple text strings that conform to an api. Its easier then it sounds.",
   "main": "main.js",
   "dependencies": {
-    "concat-stream": "^1.5.0",
     "fixed-2d-array": "git+https://git@github.com/possibly/fixed-2d-array.git",
-    "readdir-stream": "^0.1.0",
-    "rounds-emitter": "git+https://git@github.com/possibly/rounds-emitter.git",
-    "split": "^1.0.0",
-    "stream-from-array": "^0.1.0",
-    "through2": "^2.0.0"
+    "rounds-emitter": "git+https://git@github.com/possibly/rounds-emitter.git"
   },
   "devDependencies": {},
   "scripts": {

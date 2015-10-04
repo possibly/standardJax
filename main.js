@@ -7,39 +7,19 @@ var execFileSync = require('child_process').execFileSync;
 var execSync = require('child_process').execSync;
 
 //third party modules
-var concat = require('concat-stream');
 var Rounds = require('rounds-emitter');
 var rounds = new Rounds();
-var readdir = require('readdir-stream');
-var through2 = require('through2');
-var fromArray = require('stream-from-array');
-var split = require('split');
+var fs = require('fs');
 
-var programsDir = './programs/';
+var programsDir = '/programs/';
 
 function getPlayerName(path){
   return path.split('/')[path.split('/').length-1];
 }
 
-rounds.on('setup', function(){
-  readdir(programsDir)
-    .pipe(through2.obj(function preparePrograms(chunk,_,next){
-      if (chunk.path === programsDir){ return next(); }
-      chunk = './'+chunk.path;
-      execSync('chmod +x '+chunk);
-      var playerName = getPlayerName(chunk);
-      world.addPlayer(playerName);
-      this.push([chunk]);
-      next();
-    }))
-    .pipe(concat(function(data){ 
-      rounds.next(data) 
-    }));
-});
-
 rounds.on('roundStart', function(round, args){
-  var playerList = args[0];
-  playerList.forEach(function(playerPath){
+  var playerPaths = args[0];
+  playerPaths.forEach(function(playerPath){
     rounds.next(playerPath); //turn start
     rounds.next(playerPath); //turn end
     rounds.setNext('turnStart');
@@ -50,9 +30,9 @@ rounds.on('roundStart', function(round, args){
 
 rounds.on('turnStart', function(round, turn, args){
   var playerPath = args[0];
-  var playerName = getPlayerName(playerPath.toString());
+  var playerName = getPlayerName(playerPath);
   var player = world.getPlayer(playerName);
-  var playerOutput = execFileSync(playerPath.toString(), [], { input: JSON.stringify(player) });
+  var playerOutput = execFileSync(playerPath, [], { input: JSON.stringify(player) });
   var action = playerOutput.toString().trim('\n').split(' ');
   world.act(action, player);
   console.log(JSON.stringify(player));
@@ -66,4 +46,15 @@ rounds.on('gameOver', function(){
   console.log('game over');
 })
 
-rounds.next();
+fs.readdir(process.cwd()+programsDir, function(err, files){
+  var playerPaths = files.map(function(file){
+    return process.cwd()+programsDir+file;
+  })
+  playerPaths.forEach(function(playerPath){
+    execSync('chmod +x '+playerPath);
+    var playerName = getPlayerName(playerPath);
+    world.addPlayer(playerName);
+  });
+  rounds.setNext('roundStart');
+  rounds.next(playerPaths);
+});
