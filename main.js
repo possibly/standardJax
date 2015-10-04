@@ -1,3 +1,25 @@
+//Consider using spawn
+// 1) Allows continous communication between World and program
+//    - Easier to handle errors
+//    - Allows IPC by spawning another program and having them stream to each other
+// Ex:
+//  Player1 output: Steal
+//  World: 
+//    Verify()
+//    Spawn(otherPlayer)
+//      - Stdin: steal player1
+//    on(stdout, performStealing)
+//
+//  Ex2:
+//    Player1 output: talk
+//    World:
+//      Verify()
+//      Player1
+//        .pipe(spy)
+//          - on('data', fn(data){ data == 'end', stopThis() })
+//        .pipe(spawn(Player2))
+//        .pipe(Player1)  
+
 //my modules
 var World = require('./lib/World.js');
 var world = new World();
@@ -46,9 +68,10 @@ rounds.on('turnStart', function(round, turn, args){
   fromArray(playerList)
   .pipe(through2(function(playerPath,_,next){
     var playerName = getPlayerName(playerPath.toString());
-    var player = world.find(playerName)[0];
+    var player = world.getPlayer(playerName);
     var playerOutput = execFileSync(playerPath.toString(), [], { input: JSON.stringify(player) });
-    world.act(playerOutput, player);
+    var action = playerOutput.toString().trim('\n').split(' ');
+    world.act(action, player);
     console.log(JSON.stringify(player));
     next()
   }));
