@@ -1,25 +1,3 @@
-//Consider using spawn
-// 1) Allows continous communication between World and program
-//    - Easier to handle errors
-//    - Allows IPC by spawning another program and having them stream to each other
-// Ex:
-//  Player1 output: Steal
-//  World: 
-//    Verify()
-//    Spawn(otherPlayer)
-//      - Stdin: steal player1
-//    on(stdout, performStealing)
-//
-//  Ex2:
-//    Player1 output: talk
-//    World:
-//      Verify()
-//      Player1
-//        .pipe(spy)
-//          - on('data', fn(data){ data == 'end', stopThis() })
-//        .pipe(spawn(Player2))
-//        .pipe(Player1)  
-
 //my modules
 var World = require('./lib/World.js');
 var world = new World();
@@ -60,21 +38,32 @@ rounds.on('setup', function(){
 });
 
 rounds.on('roundStart', function(round, args){
+  var playerList = args[0];
+  playerList.forEach(function(playerPath){
+    rounds.next(playerPath); //turn start
+    rounds.next(playerPath); //turn end
+    rounds.setNext('turnStart');
+  });
+  rounds.setNext('roundEnd');
   rounds.next(args[0]);
-})
+});
 
 rounds.on('turnStart', function(round, turn, args){
-  var playerList = args[0];
-  fromArray(playerList)
-  .pipe(through2(function(playerPath,_,next){
-    var playerName = getPlayerName(playerPath.toString());
-    var player = world.getPlayer(playerName);
-    var playerOutput = execFileSync(playerPath.toString(), [], { input: JSON.stringify(player) });
-    var action = playerOutput.toString().trim('\n').split(' ');
-    world.act(action, player);
-    console.log(JSON.stringify(player));
-    next()
-  }));
+  var playerPath = args[0];
+  var playerName = getPlayerName(playerPath.toString());
+  var player = world.getPlayer(playerName);
+  var playerOutput = execFileSync(playerPath.toString(), [], { input: JSON.stringify(player) });
+  var action = playerOutput.toString().trim('\n').split(' ');
+  world.act(action, player);
+  console.log(JSON.stringify(player));
+});
+
+rounds.on('roundEnd', function(round, args){
+  rounds.next(args[0]);
+});
+
+rounds.on('gameOver', function(){
+  console.log('game over');
 })
 
 rounds.next();
