@@ -34,7 +34,21 @@ rounds.on('turnStart', function(round, turn, args){
   var player = world.getPlayer(playerName);
   var playerOutput = execFileSync(playerPath, [], { input: JSON.stringify(player) });
   var action = playerOutput.toString().trim('\n').split(' ');
-  world.act(action, player);
+  if (action[0] === 'move'){
+    var oldCoords = player.getPosition();
+    var newCoords = player.move(action);
+    if (!world.collision(newCoords)){
+      world.remove(oldCoords[0], oldCoords[1]);
+      world.put(newCoords[0], newCoords[1], player);
+      console.log(player.name+' '+action+' successfully.');
+    }
+    else {
+      console.log(player.name+" can not "+action+" since "+world.get(newCoords[0], newCoords[1])+" is in the way.");
+    }
+  }
+  else{
+    console.log(action+' is not a valid action.');
+  }
   console.log(JSON.stringify(player));
 });
 
