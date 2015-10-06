@@ -43,10 +43,11 @@ rounds.on('roundStart', function(round, args){
   rounds.next(args[0]);
 });
 
-function actionFromPath(playerPath){
+function actionFromPath(playerPath, verb){
   var playerName = nameFromPath(playerPath);
   var player = world.getPlayer(playerName);
-  var playerInput = {'action': 'play', 'info': player.toString()};
+  var playerInput = {'action': verb, 'info': player.toString()};
+  console.log(player.name+": input was "+JSON.stringify(playerInput));
   var playerOutput = execFileSync(player.path, [], { input: JSON.stringify(playerInput) });
   var action = createAction();
   action.raw = playerOutput.toString().trim('\n').split(' ');
@@ -59,7 +60,7 @@ function interpret(action){
     action.fn = world.move;
   }
   else if( action.raw[0] === 'steal' || action.raw[0] === 'share' ){
-    action.otherAction = actionFromPath(world.getPlayer(action.raw[1]).path);
+    action.otherAction = actionFromPath(world.getPlayer(action.raw[1]).path, 'decide');
     if (action.otherAction.raw[0] !== 'steal' || action.otherAction.raw[0] !== 'share'){ action.otherAction.raw = ['steal']; }
     action.fn = world.decide;
   }
@@ -71,7 +72,7 @@ function interpret(action){
 }
 
 rounds.on('turnStart', function(round, turn, args){
-  var action = actionFromPath(args[0]);
+  var action = actionFromPath(args[0], 'play');
   try{
     interpret(action).perform(world);
   }catch(err){
