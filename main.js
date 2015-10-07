@@ -18,7 +18,7 @@ function nameFromPath(path){
   return path.split('/')[path.split('/').length-1];
 }
 
-rounds.on('setup', function(args){
+rounds.on('setup', function(){
   fs.readdir(process.cwd()+programsDir, function(err, files){
     var playerPaths = files.map(function(file){
       return process.cwd()+programsDir+file;
@@ -28,19 +28,13 @@ rounds.on('setup', function(args){
       var playerName = nameFromPath(playerPath);
       world.addPlayer(playerName);
     });
-    rounds.next(playerPaths);
+    rounds.setActors(playerPaths);
+    rounds.next();
   });
 });
 
-rounds.on('roundStart', function(round, args){
-  var playerPaths = args[0];
-  playerPaths.forEach(function(playerPath){
-    rounds.next(playerPath); //turn start
-    rounds.next(playerPath); //turn end
-    rounds.setNext('turnStart');
-  });
-  rounds.setNext('roundEnd');
-  rounds.next(args[0]);
+rounds.on('roundStart', function(round, actorPaths, args){
+  rounds.next();
 });
 
 function actionFromPath(playerPath, verb){
@@ -71,22 +65,27 @@ function interpret(action){
   return action;
 }
 
-rounds.on('turnStart', function(round, turn, args){
-  var action = actionFromPath(args[0], 'play');
+rounds.on('turnStart', function(round, turn, actorPath, actorOrder, args){
+  var action = actionFromPath(actorPath, 'play');
   try{
     interpret(action).perform(world);
   }catch(err){
     console.log(err);
   }
   console.log(action.player.toString());
+  rounds.next();
+});
+
+rounds.on('turnEnd', function(){
+  rounds.next();
 });
 
 rounds.on('roundEnd', function(round, args){
-  rounds.next(args[0]);
+  rounds.next();
 });
 
 rounds.on('gameOver', function(){
   console.log('game over');
-})
+});
 
 rounds.next();
