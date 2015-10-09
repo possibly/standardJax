@@ -9,7 +9,7 @@ var execSync = require('child_process').execSync;
 
 //third party modules
 var Rounds = require('rounds-emitter');
-var rounds = new Rounds();
+var rounds = new Rounds(3);
 var fs = require('fs');
 
 var programsDir = '/programs/';
@@ -57,6 +57,9 @@ function interpret(action){
     action.otherAction = actionFromPath(world.getPlayer(action.raw[1]).path, 'decide');
     if (action.otherAction.raw[0] !== 'steal' || action.otherAction.raw[0] !== 'share'){ action.otherAction.raw = ['steal']; }
     action.fn = world.decide;
+  }
+  else if( action.raw[0] === 'gather' ){
+    action.fn = world.gather;
   }
   else{
     throw new Error(action.raw+' is not a valid action.');
