@@ -9,7 +9,7 @@ var execSync = require('child_process').execSync;
 
 //third party modules
 var Rounds = require('rounds-emitter');
-var rounds = new Rounds(3);
+var rounds = new Rounds(1);
 var fs = require('fs');
 
 var programsDir = '/programs/';
