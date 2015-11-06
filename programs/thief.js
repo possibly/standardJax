@@ -1,2 +1,2 @@
 #!/usr/local/bin/node
-console.log("steal another.js");
+console.log("exchange steal another.js");
