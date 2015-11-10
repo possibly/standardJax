@@ -30,6 +30,7 @@ function loop(){
         var targetInput = reader.read( targetPath, getPlayerKnowledge( targetName, 'exchange' ) );
         var targetState = sjcore.trigger( targetName, targetInput.toString().trim() );
         if ( !targetState.hasOwnProperty('exchange') ){ sjcore.setComponent( targetName, 'exchange', ['steal', pName] ); }
+        // TODO: Revert player state to previous state if they did not send an "exchange" action.
       }
     }catch(err) {
       console.log(err);
@@ -61,12 +62,8 @@ function getPlayerKnowledge( pName, action ){
   var knowledge = {};
   knowledge.action = action;
   knowledge.info = sjcore.getComponents(pName);
-  knowledge.info.surroundings = getSurroundings( pName ) || [];
+  knowledge.info.surroundings = sjcore.getSurroundings( pName );
   return knowledge;
-}
-
-function getSurroundings( pName ){
-  /* TODO: Implement this. Output 2d array. */
 }
 
 function render(){

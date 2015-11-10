@@ -1,0 +1,26 @@
+{
+  "name": "standard-jax",
+  "version": "1.0.0",
+  "description": "Applejax but played by writing programs that recieve a JSON payload via stdin and respond via stdout with simple text strings that conform to an api. Its easier then it sounds.",
+  "main": "index.js",
+  "dependencies": {
+    "2d-array": "^1.0.0",
+    "fixed-2d-array": "^1.2.0",
+    "split": "^1.0.0",
+    "standardjax-core": "git+https://github.com/possibly/standardjax-core.git"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/possibly/standardJax.git"
+  },
+  "author": "Tyler Brothers <tylerbrothers1@gmail.com> (www.thetylerbrothers.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/possibly/standardJax/issues"
+  },
+  "homepage": "https://github.com/possibly/standardJax#readme"
+}
